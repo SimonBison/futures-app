@@ -1,6 +1,8 @@
 package com.gmail.spbisoft.futuresapp.service;
 
 import com.gmail.spbisoft.futuresapp.model.Futures;
+import com.gmail.spbisoft.futuresapp.repository.FuturesRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,35 +12,29 @@ import java.util.List;
 @Service
 public class FuturesService {
 
-    private List<Futures> futuresList = new ArrayList<>(Arrays.asList(
-            new Futures("1", "Indices", "E-Mini S%P 500 Index", "ES", "6,600", "6,000"),
-            new Futures("2", "Indices", "E-Mini Russell 2000 Index", "QR", "2,433", "2212"),
-            new Futures("3", "Softs", "Orange Juice [FCOJ-A]", "OJ", "792", "720")
-        ));
+    @Autowired
+    private FuturesRepository futuresRepository;
 
     public List<Futures> getAllFutures() {
-        return futuresList;
+        List<Futures> furturesList = new ArrayList<>();
+        futuresRepository.findAll()
+        .forEach (furturesList::add);
+        return furturesList;
     }
 
     public Futures getFutures(String id)  {
-         return futuresList.stream().filter(f -> f.getId().equals(id)).findFirst().get();
+        return futuresRepository.findById(id).get();
     }
 
     public void addFutures(Futures futures){
-        futuresList.add(futures);
+        futuresRepository.save(futures);
     }
 
     public void updateFutures(String id, Futures futures) {
-        for (int i = 0; i < futuresList.size(); i++) {
-            Futures f = futuresList.get(i);
-            if (f.getId().equals(id)){
-                futuresList.set(i, futures);
-                return;
-            }
-        }
+        futuresRepository.save(futures);
     }
 
     public void deleteFutures(String id) {
-        futuresList.removeIf(f -> f.getId().equals(id));
+        futuresRepository.deleteById(id);
     }
 }
